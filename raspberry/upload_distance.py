@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding:utf-8 -*-
 
 '''
@@ -21,10 +22,10 @@ import requests
 import os
 import time
 import math
+import csv
 
 from DFRobot_RaspberryPi_A02YYUW import DFRobot_A02_Distance as Board
 
-#board = Board()
 
 def print_distance(dis):
   if board.last_operate_status == board.STA_OK:
@@ -46,6 +47,7 @@ if __name__ == "__main__":
 
     # path to API_KEY
     home = os.path.expanduser("~")
+    print(home)
     path = home +'/.API_KEYS/machinist_keys.json'
     f = open(path)
     json_data = json.load(f)
@@ -89,13 +91,27 @@ if __name__ == "__main__":
     board.set_dis_range(dis_min, dis_max)
    
     start = time.time()
-    time_out = 600
+    time_out = 300
 
-#t = time.time() - start
+    f = open('time.csv', 'w')
+
+    writer = csv.writer(f, lineterminator='\n')
+    writer.writerow(['start time','current time'])
+
     while True:
         distance = board.getDistance()
         time.sleep(0.3)
-        if time.time() - start > 300:
+        
+       #writer = csv.writer(f, lineterminator='\n')
+
+        
+        #writer.writerow(['start time','current time'])
+       # print("time", time.time())
+        
+        
+       # print("abs time : ", abs(time.time() - start))
+        if time.time() - start > 60:
+            print("start time",start)
             start = time.time()
 
             req_data = json.dumps(
@@ -103,8 +119,8 @@ if __name__ == "__main__":
               "agent": "Home",
               "metrics": [
                 {
-                  "name": "temperature",
-                  "namespace": "Environment Sensor",
+                  "name": "water level",
+                  "namespace": "Ultrasonic wave sensor",
                   "data_point": {
                     "value": distance
                   }
@@ -114,8 +130,14 @@ if __name__ == "__main__":
             req = requests.post(url_machinist, data=req_data, headers=req_header)
             print_distance(distance)
       #time.sleep(0.3) #Delay time < 0.6s
-        if abs(start - time.time()) > time_out:
-            start = time.time() 
+        elif abs(start - time.time()) > time_out:
+            start = time.time()
+        else:
+            if abs(start - time.time()) > 50:
+                print("start time ", start)
+                print("current time ", time.time())
+                writer.writerow([start,time.time()])
+            pass
 
        # print (start)
        # print (time.time())

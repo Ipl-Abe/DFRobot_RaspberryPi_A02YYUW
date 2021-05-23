@@ -119,7 +119,7 @@ if __name__ == "__main__":
               "agent": "Home",
               "metrics": [
                 {
-                  "name": "water level",
+                  "name": "distance",
                   "namespace": "Ultrasonic wave sensor",
                   "data_point": {
                     "value": distance

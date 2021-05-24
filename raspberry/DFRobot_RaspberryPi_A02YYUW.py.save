@@ -46,9 +46,9 @@ class DFRobot_A02_Distance:
   range_max = 4500
 
   def __init__(self):
-    self.ser = serial.Serial("/dev/ttyUSB0", 9600)
-    #self.ser = serial.Serial("/dev/ttyAMA0", 9600)
-    if self.ser.isOpen() != True:
+    #self.ser = serial.Serial("/dev/ttyUSB0", 9600)
+    
+   if self.ser.isOpen() != True:
       self.last_operate_status = self.STA_ERR_SERIAL
 
   def check_sum(self, l):

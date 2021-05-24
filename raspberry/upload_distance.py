@@ -60,25 +60,10 @@ if __name__ == "__main__":
         'Authorization': Authorization_str,
     }
 
-    # make data
-    req_data = json.dumps(
-    {
-      "agent": "Home",
-      "metrics": [
-        {
-          "name": "temperature",
-          "namespace": "Environment Sensor",
-          "data_point": {
-            "value": 30.6
-          }
-        }
-      ]
-    })
-
     url_machinist = "https://gw.machinist.iij.jp/endpoint"
 
     # post with header
-    #req = requests.post(url_machinist, data=req_data, headers=req_header)
+    # req = requests.post(url_machinist, data=req_data, headers=req_header)
     # print status
     #print("data posted." + " status:", req.status_code)
     #print("check status? 200->ok! 4**->bad!")
@@ -91,12 +76,14 @@ if __name__ == "__main__":
     board.set_dis_range(dis_min, dis_max)
    
     start = time.time()
-    time_out = 300
+    time_out = 600
 
-    f = open('time.csv', 'w')
+    #f = open('time.csv', 'w')
 
-    writer = csv.writer(f, lineterminator='\n')
-    writer.writerow(['start time','current time'])
+    #writer = csv.writer(f, lineterminator='\n')
+    #writer.writerow(['start time','current time'])
+
+    calib_data = 110
 
     while True:
         distance = board.getDistance()
@@ -110,16 +97,16 @@ if __name__ == "__main__":
         
         
        # print("abs time : ", abs(time.time() - start))
-        if time.time() - start > 60:
+        if abs(time.time() - start) > 300:
             print("start time",start)
             start = time.time()
-
+            distance = calib_data - distance
             req_data = json.dumps(
             {
               "agent": "Home",
               "metrics": [
                 {
-                  "name": "distance",
+                  "name": "water level",
                   "namespace": "Ultrasonic wave sensor",
                   "data_point": {
                     "value": distance
@@ -133,10 +120,10 @@ if __name__ == "__main__":
         elif abs(start - time.time()) > time_out:
             start = time.time()
         else:
-            if abs(start - time.time()) > 50:
-                print("start time ", start)
-                print("current time ", time.time())
-                writer.writerow([start,time.time()])
+           # if abs(start - time.time()) > 50:
+           #     print("start time ", start)
+           #     print("current time ", time.time())
+           #     writer.writerow([start,time.time()])
             pass
 
        # print (start)
